@@ -208,6 +208,8 @@ public class AdapterService extends Service {
     private PowerManager.WakeLock mWakeLock;
     private String mWakeLockName;
 
+    private ProfileObserver mProfileObserver;
+
     public AdapterService() {
         super();
         if (TRACE_REF) {
@@ -439,9 +441,8 @@ public class AdapterService extends Service {
         mSdpManager = SdpManager.init(this);
         registerReceiver(mAlarmBroadcastReceiver, new IntentFilter(ACTION_ALARM_WAKEUP));
         setAdapterService(this);
-
-
-
+        mProfileObserver = new ProfileObserver(getApplicationContext(), this, new Handler());
+        mProfileObserver.start();
     }
 
     @Override
@@ -460,6 +461,7 @@ public class AdapterService extends Service {
 
     public void onDestroy() {
         debugLog("onDestroy()");
+        mProfileObserver.stop();
     }
 
     void BleOnProcessStart() {
